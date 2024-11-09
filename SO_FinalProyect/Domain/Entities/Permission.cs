@@ -1,3 +1,5 @@
+using System;
+
 namespace SO_API_REST.Domain.Entities;
 
 public class Permission
