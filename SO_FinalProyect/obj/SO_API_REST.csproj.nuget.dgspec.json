@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/alejandrogomez/Documents/IBERO/SO/FinalProyect/SO_Project_API/SO_FinalProyect/SO_API_REST.csproj": {}
+    "C:\\Users\\fereg\\OneDrive\\Documentos\\ibero\\so\\SO_Project_API\\SO_FinalProyect\\SO_API_REST.csproj": {}
   },
   "projects": {
-    "/Users/alejandrogomez/Documents/IBERO/SO/FinalProyect/SO_Project_API/SO_FinalProyect/SO_API_REST.csproj": {
+    "C:\\Users\\fereg\\OneDrive\\Documentos\\ibero\\so\\SO_Project_API\\SO_FinalProyect\\SO_API_REST.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/alejandrogomez/Documents/IBERO/SO/FinalProyect/SO_Project_API/SO_FinalProyect/SO_API_REST.csproj",
+        "projectUniqueName": "C:\\Users\\fereg\\OneDrive\\Documentos\\ibero\\so\\SO_Project_API\\SO_FinalProyect\\SO_API_REST.csproj",
         "projectName": "SO_API_REST",
-        "projectPath": "/Users/alejandrogomez/Documents/IBERO/SO/FinalProyect/SO_Project_API/SO_FinalProyect/SO_API_REST.csproj",
-        "packagesPath": "/Users/alejandrogomez/.nuget/packages/",
-        "outputPath": "/Users/alejandrogomez/Documents/IBERO/SO/FinalProyect/SO_Project_API/SO_FinalProyect/obj/",
+        "projectPath": "C:\\Users\\fereg\\OneDrive\\Documentos\\ibero\\so\\SO_Project_API\\SO_FinalProyect\\SO_API_REST.csproj",
+        "packagesPath": "C:\\Users\\fereg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\fereg\\OneDrive\\Documentos\\ibero\\so\\SO_Project_API\\SO_FinalProyect\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/alejandrogomez/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\fereg\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -79,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\fereg\\.dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
