@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SO_API_REST", "SO_API_REST.csproj", "{0E4CF965-A8C2-4613-84CA-ADBF86EB042C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E4CF965-A8C2-4613-84CA-ADBF86EB042C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E4CF965-A8C2-4613-84CA-ADBF86EB042C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E4CF965-A8C2-4613-84CA-ADBF86EB042C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E4CF965-A8C2-4613-84CA-ADBF86EB042C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+@SO_API_REST_HostAddress = http://localhost:5238
+
+GET {{SO_API_REST_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
