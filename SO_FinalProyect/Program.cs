@@ -3,10 +3,19 @@ using SO_API_REST.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure the DbContext with MySQL
+// Configura el DbContext con la opción de resiliencia de conexión
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 26))));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 26)),
+        mysqlOptions =>
+        {
+            mysqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,       // Número máximo de intentos
+                maxRetryDelay: TimeSpan.FromSeconds(10), // Tiempo máximo entre intentos
+                errorNumbersToAdd: null // Opcional: Especificar códigos de error transitorios
+            );
+        }));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
