@@ -16,7 +16,6 @@
     <ItemGroup>
       <Folder Include="Controllers\" />
       <Folder Include="Domain\DTOs\" />
-      <Folder Include="Domain\Entities\" />
       <Folder Include="Handlers\" />
       <Folder Include="Repositories\" />
       <Folder Include="Services\" />
