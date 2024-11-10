@@ -1,0 +1,6 @@
+@residential_management_HostAddress = http://localhost:5262
+
+GET {{residential_management_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
