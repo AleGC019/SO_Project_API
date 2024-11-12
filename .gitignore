@@ -1,3 +1,5 @@
+env.text
+
 # Rider and JetBrains IDEs
 .idea/
 .Rider/

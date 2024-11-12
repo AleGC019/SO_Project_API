@@ -9,7 +9,7 @@ public class House : BaseEntity
     public int HouseNumber { get; set; }
 
     [Required(ErrorMessage = "La dirección de la casa es requerida")]
-    [MaxLength(50, ErrorMessage = "La dirección de la casa no puede exceder los 100 caracteres")]
+    [MaxLength(50, ErrorMessage = "La dirección de la casa no puede exceder los 50 caracteres")]
     public string HouseAddress { get; set; }
 
     // Relationship with User (a house can have multiple inhabitants, but a user can only live in one house)

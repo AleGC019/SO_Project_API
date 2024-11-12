@@ -1,6 +1,7 @@
 using RM_API.Core.Entities;
-using RM_API.Core.Interfaces.IRole;
 using RM_API.Core.Models;
+using RM_API.Data.Repositories.Interfaces;
+using RM_API.Service.Services.Interfaces;
 
 namespace RM_API.Service.Services;
 
@@ -13,9 +14,9 @@ public class RoleService : IRoleService
         _roleRepository = roleRepository;
     }
 
-    public async Task<ResponseModel> GetOrCreateRoleByRoleName(RoleName name)
+    public async Task<ResponseModel> GetOrCreateDefaultRole()
     {
-        var role = await _roleRepository.GetRoleByName(name);
+        var role = await _roleRepository.GetRoleByName(RoleName.RES);
 
         if (role != null)
             return new ResponseModel(
@@ -26,7 +27,7 @@ public class RoleService : IRoleService
 
         var newRole = new Role
         {
-            RoleName = name
+            RoleName = RoleName.RES
         };
 
         try
@@ -47,9 +48,20 @@ public class RoleService : IRoleService
         }
     }
 
-    public async Task<Role?> GetRoleById(Guid id)
+    public async Task<ResponseModel> GetRoleById(Guid id)
     {
-        return await _roleRepository.GetRoleById(id);
+        var role = await _roleRepository.GetRoleById(id);
+
+        return role != null
+            ? new ResponseModel(
+                true,
+                "Role found",
+                role
+            )
+            : new ResponseModel(
+                false,
+                "Role not found"
+            );
     }
 
     public async Task<ResponseModel> GetRoleByName(RoleName name)

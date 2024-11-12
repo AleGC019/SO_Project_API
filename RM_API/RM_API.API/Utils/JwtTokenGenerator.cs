@@ -2,14 +2,29 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using RM_API.Core.Entities;
+using RM_API.Service.Tools;
 
 namespace RM_API.API.Utils;
 
-public class JwtTokenGenerator(IConfiguration configuration)
+public class JwtTokenGenerator
 {
-    public string GenerateToken(Guid userId, string userName, string role)
+    private readonly IConfiguration _configuration;
+    private readonly TimeZoneTool _timeZoneTool;
+
+    public JwtTokenGenerator(IConfiguration configuration, TimeZoneTool timeZoneTool)
     {
-        var jwtSettings = configuration.GetSection("JwtSettings");
+        _configuration = configuration;
+        _timeZoneTool = timeZoneTool;
+    }
+
+    public string GenerateToken(User user)
+    {
+        Guid userId = user.Id;
+        string userName = user.UserName;
+        string role = user.UserRole.RoleName.ToString();
+        
+        var jwtSettings = _configuration.GetSection("JwtSettings");
         var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
 
         var claims = new[]
@@ -25,7 +40,7 @@ public class JwtTokenGenerator(IConfiguration configuration)
             jwtSettings["Issuer"],
             jwtSettings["Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
+            expires: _timeZoneTool.ConvertUtcToAppTimeZone(DateTime.UtcNow).AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
             signingCredentials: credentials
         );
 

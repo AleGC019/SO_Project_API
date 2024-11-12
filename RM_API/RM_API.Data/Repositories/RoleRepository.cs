@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RM_API.Core.Entities;
-using RM_API.Core.Interfaces.IRole;
+using RM_API.Data.Repositories.Interfaces;
 
 namespace RM_API.Data.Repositories;
 

@@ -1,11 +1,11 @@
 using RM_API.Core.Entities;
 using RM_API.Core.Models;
 
-namespace RM_API.Core.Interfaces.IRole;
+namespace RM_API.Service.Services.Interfaces;
 
 public interface IRoleService
 {
-    Task<Role?> GetRoleById(Guid id);
+    Task<ResponseModel> GetRoleById(Guid id);
     Task<ResponseModel> CreateNewRole(Role role);
-    Task<ResponseModel> GetOrCreateRoleByRoleName(RoleName name);
+    Task<ResponseModel> GetOrCreateDefaultRole();
 }

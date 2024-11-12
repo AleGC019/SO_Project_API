@@ -4,47 +4,73 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RM_API.API.Utils;
-using RM_API.Core.Interfaces;
-using RM_API.Core.Interfaces.IRole;
+using RM_API.Core.Entities;
 using RM_API.Data;
 using RM_API.Data.Repositories;
+using RM_API.Data.Repositories.Interfaces;
 using RM_API.Service.Services;
 using RM_API.Service.Services.Interfaces;
 using RM_API.Service.Tools;
-using RM_API.Service.Utils;
 using DateTimeConverter = RM_API.API.Utils.DateTimeConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-builder.Services.Configure<JwtSettings>(jwtSettings);
-
-var secretKey = jwtSettings["SecretKey"];
-var key = Encoding.UTF8.GetBytes(secretKey);
-
-builder.Services.AddAuthentication(options =>
+// Add CORS policy that allows all origins
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
+});
 
-builder.Services.AddAuthorization();
+
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
+builder.Services.Configure<JwtSettings>(jwtSettings);
+var secretKey = jwtSettings["SecretKey"];
+if (secretKey != null)
+{
+    var key = Encoding.UTF8.GetBytes(secretKey);
+
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+        });
+}
+else
+{
+    throw new Exception("JwtSettings:SecretKey is required in appsettings.json");
+}
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole(RoleName.ADMIN.ToString()));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+});
+
 
 // Register JwtTokenGenerator in dependency injection
 builder.Services.AddSingleton<JwtTokenGenerator>();
+
+// Register TimeZoneTool in dependency injection
+builder.Services.AddSingleton<TimeZoneTool>();
 
 // Register DatabaseTestUtil for dependency injection
 builder.Services.AddSingleton<DatabaseTestUtil>();
@@ -60,18 +86,20 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new DateTimeConverter("yyyy-MM-ddTHH:mm:ssZ")); // ISO 8601 format
     });
 
-
 // Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<TimeZoneTool>();
+builder.Services.AddScoped<IHouseRepository, HouseRepository>();
+builder.Services.AddScoped<IHouseService, HouseService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseCors("AllowAllOrigins"); // Enable the AllowAllOrigins policy
 
 // Test the database connection
 var dbTestService = app.Services.GetRequiredService<DatabaseTestUtil>();
@@ -92,7 +120,7 @@ else
     Console.WriteLine("❌ Error al conectar a la base de datos.");
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

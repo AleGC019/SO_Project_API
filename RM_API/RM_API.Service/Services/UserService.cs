@@ -1,8 +1,7 @@
 using RM_API.Core.Entities;
-using RM_API.Core.Interfaces;
-using RM_API.Core.Interfaces.IRole;
 using RM_API.Core.Models;
 using RM_API.Core.Models.AuthModels;
+using RM_API.Data.Repositories.Interfaces;
 using RM_API.Service.Services.Interfaces;
 using RM_API.Service.Utils;
 
@@ -29,7 +28,7 @@ public class UserService : IUserService
             return new ResponseModel(false, "El usuario con el correo ingresado ya existe");
 
         // Obtain the default role. If it doesn't exist, create it
-        var roleResponse = await _roleService.GetOrCreateRoleByRoleName(RoleName.RES);
+        var roleResponse = await _roleService.GetOrCreateDefaultRole();
 
         // If the role doesn't exist, return the error message
         if (!roleResponse.Success)
