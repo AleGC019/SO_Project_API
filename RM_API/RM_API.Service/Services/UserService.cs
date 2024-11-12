@@ -1,82 +1,69 @@
-// Ubicación: RM_API.Service.Services.UserService.cs
-
 using RM_API.Core.Entities;
 using RM_API.Core.Interfaces;
+using RM_API.Core.Interfaces.IRole;
 using RM_API.Core.Models;
-using RM_API.Service.Utils;
-using Microsoft.Extensions.Configuration;
-using RM_API.Core.Interfaces.IUser;
 using RM_API.Core.Models.AuthModels;
+using RM_API.Service.Services.Interfaces;
+using RM_API.Service.Utils;
 
-namespace RM_API.Service.Services
+namespace RM_API.Service.Services;
+
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private readonly IUserRepository _userRepository;
+    private readonly IRoleService _roleService;
+
+    public UserService(IUserRepository userRepository, IRoleService roleService)
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IConfiguration _configuration;
+        _userRepository = userRepository;
+        _roleService = roleService;
+    }
 
-        public UserService(IUserRepository userRepository, IConfiguration configuration)
+    public async Task<ResponseModel> RegisterAsync(RegisterModel model)
+    {
+        // Verify if the user already exists
+        var existingUser = await _userRepository.GetByEmailAsync(model.email);
+
+        // If the user already exists, return the error message
+        if (existingUser != null)
+            return new ResponseModel(false, "El usuario con el correo ingresado ya existe");
+
+        // Obtain the default role. If it doesn't exist, create it
+        var roleResponse = await _roleService.GetOrCreateRoleByRoleName(RoleName.RES);
+
+        // If the role doesn't exist, return the error message
+        if (!roleResponse.Success)
+            return new ResponseModel(false, roleResponse.Message);
+
+        // Cast the role to Role
+        var defaultRole = (Role)roleResponse.Data!;
+
+        // Hash the password
+        var hashedPassword = PasswordHelper.HashPassword(model.Password);
+
+        // Create the new user
+        var newUser = new User
         {
-            _userRepository = userRepository;
-            _configuration = configuration;
-        }
+            UserName = model.username,
+            UserEmail = model.email,
+            UserPassword = hashedPassword,
+            UserRole = defaultRole
+        };
 
-        public async Task<ResponseModel> RegisterAsync(RegisterModel model)
-        {
-            // Verificar si el usuario ya existe
-            try
-            {
-                var existingUser = await _userRepository.GetByEmailAsync(model.email);
+        await _userRepository.AddAsync(newUser);
 
-                if (existingUser != null)
-                    return new ResponseModel(false, "El usuario con el correo ingresado ya existe");
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel(false, ex.Message, null);
-            }
+        return new ResponseModel(true, "Usuario registrado exitosamente");
+    }
 
-            // // Obtener el rol predeterminado desde la configuración (si lo necesitas)
-            var defaultRoleName = RoleName.RES;
+    public async Task<ResponseModel> ValidateUser(string email, string password)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
 
-            // Get user age by using his/her birthdate up to this day. Remember to have day and month in mind.
-            var age = DateTime.UtcNow.Year - DateOnly.Parse(model.BirthDate).Year;
+        if (user == null)
+            return new ResponseModel(false, "Usuario no encontrado");
 
-            // Crear el nuevo usuario y encriptar la contraseña
-            var hashedPassword = PasswordHelper.HashPassword(model.Password);
-
-            var newUser = new User
-            {
-                UserName = model.username,
-                UserEmail = model.email,
-                UserPassword = hashedPassword,
-                UserAge = age,
-                UserRole = new Role() { RoleName = defaultRoleName }
-            };
-
-            await _userRepository.AddAsync(newUser);
-            
-            return new ResponseModel(true, "Usuario registrado exitosamente");
-        }
-
-        public Task LoginAsync(LoginModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ResponseModel> ValidateUser(string email, string password)
-        {
-            var user = await _userRepository.GetByEmailAsync(email);
-            
-            if (user == null)
-                return new ResponseModel(false, "Usuario no encontrado");
-            
-            if (!PasswordHelper.VerifyPassword(password, user.UserPassword))
-                return new ResponseModel(false, "Contraseña incorrecta");
-            
-            return new ResponseModel(true, "Usuario encontrado", user);
-        }
-
-        // Register user service
+        return !PasswordHelper.VerifyPassword(password, user.UserPassword)
+            ? new ResponseModel(false, "Contraseña incorrecta")
+            : new ResponseModel(true, "Usuario encontrado", user);
     }
 }

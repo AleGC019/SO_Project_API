@@ -5,12 +5,12 @@ namespace RM_API.API.Utils;
 public class DatabaseTestUtil
 {
     private readonly IConfiguration _configuration;
-    
+
     public DatabaseTestUtil(IConfiguration configuration)
     {
         _configuration = configuration;
     }
-    
+
     public bool TestConnection()
     {
         try
@@ -26,5 +26,4 @@ public class DatabaseTestUtil
             return false;
         }
     }
-
 }

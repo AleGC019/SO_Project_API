@@ -1,5 +1,4 @@
 using RM_API.Core.Entities;
-using RM_API.Core.Models;
 
 namespace RM_API.Core.Interfaces;
 

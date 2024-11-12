@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RM_API.Core\RM_API.Core.csproj" />
-      <ProjectReference Include="..\RM_API.Data\RM_API.Data.csproj" />
+        <ProjectReference Include="..\RM_API.Core\RM_API.Core.csproj"/>
+        <ProjectReference Include="..\RM_API.Data\RM_API.Data.csproj"/>
     </ItemGroup>
 
 </Project>

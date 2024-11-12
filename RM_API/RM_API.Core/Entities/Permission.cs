@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices.JavaScript;
 
 namespace RM_API.Core.Entities;
 
@@ -13,7 +12,7 @@ public class Permission : BaseEntity
 
     [Required(ErrorMessage = "El estado del permiso es obligatorio.")]
     public bool Status { get; set; }
-    
+
     // Relationships: A permission must have a house and user associated with it, it can not exist without them
 
     // Relationship with House (a permission can only be associated with one house, but a house can have multiple permissions)

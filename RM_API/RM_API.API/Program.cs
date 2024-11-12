@@ -1,14 +1,18 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using RM_API.Data;
 using System.Text;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RM_API.API.Utils;
 using RM_API.Core.Interfaces;
 using RM_API.Core.Interfaces.IRole;
-using RM_API.Core.Interfaces.IUser;
+using RM_API.Data;
 using RM_API.Data.Repositories;
 using RM_API.Service.Services;
+using RM_API.Service.Services.Interfaces;
+using RM_API.Service.Tools;
+using RM_API.Service.Utils;
+using DateTimeConverter = RM_API.API.Utils.DateTimeConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,14 +53,20 @@ builder.Services.AddSingleton<DatabaseTestUtil>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add other services
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new DateTimeConverter("yyyy-MM-ddTHH:mm:ssZ")); // ISO 8601 format
+    });
+
 
 // Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<TimeZoneTool>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -65,7 +75,7 @@ var app = builder.Build();
 
 // Test the database connection
 var dbTestService = app.Services.GetRequiredService<DatabaseTestUtil>();
-bool isConnected = dbTestService.TestConnection();
+var isConnected = dbTestService.TestConnection();
 
 app.UseAuthentication();
 app.UseAuthorization();
