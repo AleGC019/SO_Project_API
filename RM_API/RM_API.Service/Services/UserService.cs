@@ -9,8 +9,8 @@ namespace RM_API.Service.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepository;
     private readonly IRoleService _roleService;
+    private readonly IUserRepository _userRepository;
 
     public UserService(IUserRepository userRepository, IRoleService roleService)
     {
@@ -64,5 +64,27 @@ public class UserService : IUserService
         return !PasswordHelper.VerifyPassword(password, user.UserPassword)
             ? new ResponseModel(false, "Contraseña incorrecta")
             : new ResponseModel(true, "Usuario encontrado", user);
+    }
+
+    public async Task<ResponseModel> GetUserByEmail(string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+
+        return user == null
+            ? new ResponseModel(false, "Usuario no encontrado")
+            : new ResponseModel(true, "Usuario encontrado", user);
+    }
+
+    public async Task<ResponseModel> UpdateUser(User user)
+    {
+        try
+        {
+            await _userRepository.UpdateAsync(user);
+            return new ResponseModel(true, "Usuario actualizado exitosamente");
+        }
+        catch (Exception e)
+        {
+            return new ResponseModel(false, e.Message);
+        }
     }
 }

@@ -1,4 +1,3 @@
-using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.HouseModels;
 
@@ -8,4 +7,7 @@ public interface IHouseService
 {
     Task<ResponseModel> SaveHouse(NewHouseModel model);
     Task<ResponseModel> GetHouseById(Guid id);
+    Task<ResponseModel> GetHouseByHouseNumber(int number);
+    Task<ResponseModel> GetAllHouses();
+    Task<ResponseModel> AssignInhabitant(AppendUserToHouseModel model);
 }

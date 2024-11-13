@@ -28,4 +28,15 @@ public class HouseRepository : IHouseRepository
     {
         return await _context.Houses.SingleOrDefaultAsync(h => h.HouseNumber == houseNumber);
     }
+
+    public async Task<List<House?>> GetAllHouses()
+    {
+        return await _context.Houses.ToListAsync();
+    }
+
+    public async Task UpdateHouse(House house)
+    {
+        _context.Houses.Update(house);
+        await _context.SaveChangesAsync();
+    }
 }

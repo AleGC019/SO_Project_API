@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using RM_API.API.Utils;
+using RM_API.API.Utils.JWT;
 using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.AuthModels;

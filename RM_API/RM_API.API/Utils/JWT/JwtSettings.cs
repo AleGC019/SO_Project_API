@@ -1,4 +1,4 @@
-namespace RM_API.API.Utils;
+namespace RM_API.API.Utils.JWT;
 
 public class JwtSettings
 {

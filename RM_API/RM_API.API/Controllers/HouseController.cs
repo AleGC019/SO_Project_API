@@ -19,7 +19,7 @@ public class HouseController : ControllerBase
         _houseService = houseService;
     }
 
-    // TODO: Restrict this to admin only
+    [Authorize(Policy = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetHouseById(Guid id)
     {
@@ -29,12 +29,30 @@ public class HouseController : ControllerBase
         return Ok(house);
     }
 
-    // TODO: Restrict this to admin only
     [Authorize(Policy = "Admin")]
-    [HttpPost("add")]
+    [HttpPost("NewHouse")]
     public async Task<IActionResult> AddHouse([FromBody] NewHouseModel request)
     {
         var response = await _houseService.SaveHouse(request);
+        if (!response.Success) return Conflict(response.Message);
+        return Ok(response);
+    }
+
+    [Authorize(Policy = "Admin")]
+    [HttpGet("AllHouses")]
+    public async Task<IActionResult> GetAllHouses()
+    {
+        var response = await _houseService.GetAllHouses();
+        if (!response.Success) return NotFound(response.Message);
+        var houses = (List<HouseResponseModel>)response.Data!;
+        return Ok(houses);
+    }
+    
+    [Authorize(Policy = "Admin")]
+    [HttpPost("AppendUserToHouse")]
+    public async Task<IActionResult> AppendUserToHouse([FromBody] AppendUserToHouseModel request)
+    {
+        var response = await _houseService.AssignInhabitant(request);
         if (!response.Success) return Conflict(response.Message);
         return Ok(response);
     }

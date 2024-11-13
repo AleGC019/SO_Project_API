@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RM_API.API.Utils;
+using RM_API.API.Utils.JWT;
 using RM_API.Core.Entities;
 using RM_API.Data;
 using RM_API.Data.Repositories;
@@ -50,7 +51,8 @@ if (secretKey != null)
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings["Issuer"],
                 ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(key)
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero // Optional: Set to zero to eliminate the default clock skew
             };
         });
 }

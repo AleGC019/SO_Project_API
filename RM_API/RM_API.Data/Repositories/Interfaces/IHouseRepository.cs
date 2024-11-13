@@ -7,4 +7,6 @@ public interface IHouseRepository
     Task SaveHouse(House house);
     Task<House?> GetHouseById(Guid id);
     Task<House?> GetHouseByHouseNumber(int houseNumber);
+    Task<List<House?>> GetAllHouses();
+    Task UpdateHouse(House house);
 }

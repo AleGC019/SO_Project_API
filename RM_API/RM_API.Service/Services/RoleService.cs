@@ -64,22 +64,6 @@ public class RoleService : IRoleService
             );
     }
 
-    public async Task<ResponseModel> GetRoleByName(RoleName name)
-    {
-        var role = await _roleRepository.GetRoleByName(name);
-
-        return role != null
-            ? new ResponseModel(
-                true,
-                "Role found",
-                role
-            )
-            : new ResponseModel(
-                false,
-                "Role not found"
-            );
-    }
-
     public async Task<ResponseModel> CreateNewRole(Role role)
     {
         try
@@ -98,5 +82,21 @@ public class RoleService : IRoleService
                 ex.Message
             );
         }
+    }
+
+    public async Task<ResponseModel> GetRoleByName(RoleName name)
+    {
+        var role = await _roleRepository.GetRoleByName(name);
+
+        return role != null
+            ? new ResponseModel(
+                true,
+                "Role found",
+                role
+            )
+            : new ResponseModel(
+                false,
+                "Role not found"
+            );
     }
 }

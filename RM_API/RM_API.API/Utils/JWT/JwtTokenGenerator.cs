@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using RM_API.Core.Entities;
 using RM_API.Service.Tools;
 
-namespace RM_API.API.Utils;
+namespace RM_API.API.Utils.JWT;
 
 public class JwtTokenGenerator
 {
@@ -20,10 +20,10 @@ public class JwtTokenGenerator
 
     public string GenerateToken(User user)
     {
-        Guid userId = user.Id;
-        string userName = user.UserName;
-        string role = user.UserRole.RoleName.ToString();
-        
+        var userId = user.Id;
+        var userName = user.UserName;
+        var role = user.UserRole.RoleName.ToString();
+
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
 
@@ -40,7 +40,8 @@ public class JwtTokenGenerator
             jwtSettings["Issuer"],
             jwtSettings["Audience"],
             claims,
-            expires: _timeZoneTool.ConvertUtcToAppTimeZone(DateTime.UtcNow).AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
+            expires: DateTime.UtcNow.AddMinutes(
+                Convert.ToDouble(jwtSettings["ExpirationInMinutes"])), // Set in UTC directly
             signingCredentials: credentials
         );
 
