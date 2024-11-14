@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
     }
 
 
-    [HttpPost("signup")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         if (!ModelState.IsValid)

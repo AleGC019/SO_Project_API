@@ -25,12 +25,12 @@ public class HouseController : ControllerBase
     {
         var response = await _houseService.GetHouseById(id);
         if (!response.Success) return NotFound(response.Message);
-        var house = (House)response.Data!;
+        var house = (HouseResponseModel)response.Data!;
         return Ok(house);
     }
 
     [Authorize(Policy = "Admin")]
-    [HttpPost("NewHouse")]
+    [HttpPost("newHouse")]
     public async Task<IActionResult> AddHouse([FromBody] NewHouseModel request)
     {
         var response = await _houseService.SaveHouse(request);
@@ -39,7 +39,7 @@ public class HouseController : ControllerBase
     }
 
     [Authorize(Policy = "Admin")]
-    [HttpGet("AllHouses")]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAllHouses()
     {
         var response = await _houseService.GetAllHouses();
@@ -49,11 +49,21 @@ public class HouseController : ControllerBase
     }
     
     [Authorize(Policy = "Admin")]
-    [HttpPost("AppendUserToHouse")]
+    [HttpPost("linkInhabitant")]
     public async Task<IActionResult> AppendUserToHouse([FromBody] AppendUserToHouseModel request)
     {
         var response = await _houseService.AssignInhabitant(request);
         if (!response.Success) return Conflict(response.Message);
         return Ok(response);
+    }
+    
+    [Authorize(Policy = "Admin")]
+    [HttpGet("houseNumber/{number}")]
+    public async Task<IActionResult> GetHouseByHouseNumber(int number)
+    {
+        var response = await _houseService.GetHouseByHouseNumber(number);
+        if (!response.Success) return NotFound(response.Message);
+        var house = (HouseResponseModel)response.Data!;
+        return Ok(house);
     }
 }

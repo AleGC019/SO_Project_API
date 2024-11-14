@@ -21,17 +21,25 @@ public class HouseRepository : IHouseRepository
 
     public async Task<House?> GetHouseById(Guid id)
     {
-        return await _context.Houses.SingleOrDefaultAsync(h => h.Id == id);
+        return await _context
+            .Houses
+            .Include(h => h.Inhabitants)
+            .SingleOrDefaultAsync(h => h.Id == id);
     }
 
     public async Task<House?> GetHouseByHouseNumber(int houseNumber)
     {
-        return await _context.Houses.SingleOrDefaultAsync(h => h.HouseNumber == houseNumber);
+        return await _context
+            .Houses
+            .Include(h => h.Inhabitants)
+            .SingleOrDefaultAsync(h => h.HouseNumber == houseNumber);
     }
 
-    public async Task<List<House?>> GetAllHouses()
+    public async Task<List<House>?> GetAllHouses()
     {
-        return await _context.Houses.ToListAsync();
+        return await _context.Houses
+            .Include(h => h.Inhabitants)
+            .ToListAsync();
     }
 
     public async Task UpdateHouse(House house)

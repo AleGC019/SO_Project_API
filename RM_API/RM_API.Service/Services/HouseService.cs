@@ -44,17 +44,37 @@ public class HouseService : IHouseService
     public async Task<ResponseModel> GetHouseById(Guid id)
     {
         var house = await _houseRepository.GetHouseById(id);
-        return house == null
-            ? new ResponseModel(false, "House not found")
-            : new ResponseModel(true, "House found", house);
+
+        if (house == null)
+            return new ResponseModel(false, "House not found");
+        
+        HouseResponseModel response = new()
+        {
+            HouseNumber = house.HouseNumber,
+            Address = house.HouseAddress,
+            inhabitants = house.Inhabitants
+                .Select(i => new UserResponseModel { email = i.UserEmail, username = i.UserName }).ToList()
+        };
+        
+        return new ResponseModel(true, "House found", response);
     }
 
     public async Task<ResponseModel> GetHouseByHouseNumber(int number)
     {
         var house = await _houseRepository.GetHouseByHouseNumber(number);
-        return house == null
-            ? new ResponseModel(false, "House not found")
-            : new ResponseModel(true, "House found", house);
+        
+        if (house == null)
+            return new ResponseModel(false, "House not found");
+        
+        HouseResponseModel response = new()
+        {
+            HouseNumber = house.HouseNumber,
+            Address = house.HouseAddress,
+            inhabitants = house.Inhabitants
+                .Select(i => new UserResponseModel { email = i.UserEmail, username = i.UserName }).ToList()
+        };
+        
+        return new ResponseModel(true, "House found", response);
     }
 
     public async Task<ResponseModel> GetAllHouses()
@@ -67,8 +87,8 @@ public class HouseService : IHouseService
         List<HouseResponseModel> response = [];
         response.AddRange(houses.Select(house => new HouseResponseModel
         {
-            HouseNumber = house.HouseNumber, Address = house.HouseAddress,
-            inhabitants = house.Inhabitants
+            HouseNumber = house!.HouseNumber, Address = house.HouseAddress,
+            inhabitants = house.Inhabitants!
                 .Select(i => new UserResponseModel { email = i.UserEmail, username = i.UserName }).ToList()
         }));
 
@@ -79,34 +99,29 @@ public class HouseService : IHouseService
     {
         var email = request.UserEmail;
         var houseNumber = request.HouseNumber;
-        
+
         var userSearch = await _userService.GetUserByEmail(email);
-        
+
         if (!userSearch.Success)
             return new ResponseModel(false, "User not found");
-        
-        var user = (User) userSearch.Data!;
-        
-        var houseSearch = await GetHouseByHouseNumber(houseNumber);
-        
-        if (!houseSearch.Success)
+
+        var user = (User)userSearch.Data!;
+
+        var houseSearch = await _houseRepository.GetHouseByHouseNumber(houseNumber);
+
+        if (houseSearch == null)
             return new ResponseModel(false, "House not found");
-        
-        var house = (House) houseSearch.Data!;
-        
-        if (user.UserHouse.Equals(house))
+
+        if (user.UserHouse.Equals(houseSearch))
             return new ResponseModel(false, "User already assigned to this house");
-        
+
         if (user.UserHouse != null)
             return new ResponseModel(false, "User already assigned to an existing house");
 
         try
         {
-            user.UserHouse = house;
+            user.UserHouse = houseSearch;
             await _userService.UpdateUser(user);
-            // house.Inhabitants ??= [];
-            // house.Inhabitants.Add(user);
-            // await _houseRepository.UpdateHouse(house);
 
             return new ResponseModel(true, "User assigned to house successfully");
         }
