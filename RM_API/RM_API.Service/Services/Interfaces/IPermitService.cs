@@ -8,4 +8,5 @@ public interface IPermitService
     Task<ResponseModel> GetAllPermits();
     Task<ResponseModel> CreatePermit(PermissionRequest permissionRequest);
     Task<ResponseModel> DeletePermit(Guid permitId);
+    Task<ResponseModel> GetMyPermits(Guid userId);
 }

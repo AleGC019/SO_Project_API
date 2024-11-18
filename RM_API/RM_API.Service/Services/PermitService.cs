@@ -186,4 +186,48 @@ public class PermitService : IPermitService
             };
         }
     }
+
+    public async Task<ResponseModel> GetMyPermits(Guid userId)
+    {
+        try
+        {
+            var permits = await _permitRepository.GetPermitsByUserId(userId);
+            if (permits == null)
+            {
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "No permits found"
+                };
+            }
+
+            List<PermissionResponse> permissionModels = new();
+            foreach (var permit in permits)
+            {
+                permissionModels.Add(new PermissionResponse
+                {
+                    PermitId = permit.Id,
+                    StartDate = permit.StartDate,
+                    EndDate = permit.EndDate,
+                    HouseId = permit.HouseId,
+                    UserId = permit.UserId,
+                    Status = permit.Status
+                });
+            }
+
+            return new ResponseModel
+            {
+                Success = true,
+                Data = permissionModels
+            };
+        }
+        catch (Exception e)
+        {
+            return new ResponseModel
+            {
+                Success = false,
+                Message = e.Message
+            };
+        }
+    }
 }

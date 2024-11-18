@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RM_API.Core.Models;
 using RM_API.Core.Models.Permission;
 using RM_API.Service.Services.Interfaces;
 
@@ -45,5 +47,24 @@ public class PermitController: ControllerBase
         if (!response.Success)
             return BadRequest(response);
         return Ok(response);
+    }
+    
+    [Authorize(Policy = "Residents")]
+    [HttpGet("myPermits")]
+    public async Task<IActionResult> GetMyPermits()
+    {
+        var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (user != null)
+        {
+            var response = await _permitService.GetMyPermits(Guid.Parse(user));
+            if (!response.Success)
+                return BadRequest(response);
+            return Ok(response);
+        }
+        return BadRequest(new ResponseModel
+        {
+            Success = false,
+            Message = "User not found"
+        });
     }
 }
