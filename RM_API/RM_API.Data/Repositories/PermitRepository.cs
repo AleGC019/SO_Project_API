@@ -49,6 +49,11 @@ public class PermitRepository : IPermitRepository
         return await _context.Permissions.Where(p => p.HouseId == houseId).ToListAsync();
     }
 
+    public async Task<List<Permission>?> GetPermitsByUserId(Guid userId)
+    {
+        return await _context.Permissions.Where(p => p.UserId == userId).ToListAsync();
+    }
+
     public async Task<Permission?> GetValidPermit(Guid userId, Guid houseId)
     {
         return await _context.Permissions.FirstOrDefaultAsync(p =>
