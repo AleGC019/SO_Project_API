@@ -19,10 +19,10 @@ public class User : BaseEntity
 
     // Relationship with Role (a user can only have one role, but a role can have multiple users)
     public Guid RoleId { get; set; }
-    public Role UserRole { get; set; }
+    public virtual Role UserRole { get; set; }
 
     // Relationship with Permissions (a user can have multiple permissions, but a permission can only be associated with one user)
-    public List<Permission>? Permissions { get; set; } = new();
+    public virtual List<Permission>? Permissions { get; set; } = new();
 
     // Relationship with House (a user can only line in one house, but a house can have multiple users)
     public Guid? HouseId { get; set; }

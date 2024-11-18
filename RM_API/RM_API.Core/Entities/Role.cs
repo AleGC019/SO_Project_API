@@ -17,7 +17,7 @@ public class Role : BaseEntity
     public RoleName RoleName { get; set; }
 
     // A role can have multiple users, but each user can only have one role
-    public List<User>? Users { get; set; } = new();
+    public virtual List<User>? Users { get; set; } = new();
 
     public bool IsActive { get; set; } = true;
 }

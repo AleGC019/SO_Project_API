@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.AuthModels;
+using RM_API.Core.Models.UserModels;
 using RM_API.Data.Repositories.Interfaces;
 using RM_API.Service.Services.Interfaces;
 using RM_API.Service.Utils;
@@ -70,9 +72,55 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetByEmailAsync(email);
 
-        return user == null
-            ? new ResponseModel(false, "Usuario no encontrado")
-            : new ResponseModel(true, "Usuario encontrado", user);
+        if (user == null)
+            return new ResponseModel(false, "Usuario no encontrado");
+
+        UserResponseModel userResponse = new()
+        {
+            email = user.UserEmail,
+            username = user.UserName,
+            role = user.UserRole.RoleName.ToString()
+        };
+
+        return new ResponseModel(true, "Usuario encontrado", userResponse);
+    }
+
+    public async Task<ResponseModel> GetUserByGuid(Guid guid)
+    {
+        var user = await _userRepository.GetByIdAsync(guid);
+        if (user == null)
+            return new ResponseModel(false, "Usuario no encontrado");
+
+        UserResponseModel userResponse = new()
+        {
+            email = user.UserEmail,
+            username = user.UserName,
+            role = user.UserRole.RoleName.ToString()
+        };
+
+        return new ResponseModel(true, "Usuario encontrado", userResponse);
+    }
+
+    public async Task<ResponseModel> GetAllUsers()
+    {
+        var users = await _userRepository.GetAllAsync();
+
+        if (users.Count == 0)
+            return new ResponseModel(false, "No hay usuarios registrados");
+
+        List<UserResponseModel> userResponses = new();
+
+        foreach (var user in users)
+        {
+            userResponses.Add(new UserResponseModel
+            {
+                email = user.UserEmail,
+                username = user.UserName,
+                role = user.UserRole.RoleName.ToString()
+            });
+        }
+
+        return new ResponseModel(true, "Usuarios encontrados", userResponses);
     }
 
     public async Task<ResponseModel> UpdateUser(User user)
@@ -86,5 +134,27 @@ public class UserService : IUserService
         {
             return new ResponseModel(false, e.Message);
         }
+    }
+
+    public async Task<ResponseModel> DeactivateUser(string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+
+        Console.WriteLine(user);
+
+        if (user == null)
+            return new ResponseModel(false, "Usuario no encontrado");
+
+        user.Permissions?.Clear();
+        user.UserHouse = null;
+        user.IsActive = false;
+
+        Console.WriteLine("About to update");
+
+        await _userRepository.UpdateAsync(user);
+
+        Console.WriteLine("Updated");
+
+        return new ResponseModel(true, "Usuario desactivado exitosamente");
     }
 }

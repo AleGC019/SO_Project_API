@@ -19,6 +19,10 @@ public class ResponseModel
     {
         Success = success;
     }
+    
+    public ResponseModel()
+    {
+    }
 
     public bool Success { get; set; }
     public string? Message { get; set; }

@@ -9,7 +9,7 @@ using RM_API.Service.Tools;
 namespace RM_API.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth/")]
 public class AuthController : ControllerBase
 {
     private readonly JwtTokenGenerator _jwtTokenGenerator;

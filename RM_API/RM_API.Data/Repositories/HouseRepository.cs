@@ -23,7 +23,6 @@ public class HouseRepository : IHouseRepository
     {
         return await _context
             .Houses
-            .Include(h => h.Inhabitants)
             .SingleOrDefaultAsync(h => h.Id == id);
     }
 
@@ -31,14 +30,12 @@ public class HouseRepository : IHouseRepository
     {
         return await _context
             .Houses
-            .Include(h => h.Inhabitants)
             .SingleOrDefaultAsync(h => h.HouseNumber == houseNumber);
     }
 
     public async Task<List<House>?> GetAllHouses()
     {
         return await _context.Houses
-            .Include(h => h.Inhabitants)
             .ToListAsync();
     }
 

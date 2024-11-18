@@ -9,5 +9,6 @@ public interface IHouseService
     Task<ResponseModel> GetHouseById(Guid id);
     Task<ResponseModel> GetHouseByHouseNumber(int number);
     Task<ResponseModel> GetAllHouses();
-    Task<ResponseModel> AssignInhabitant(AppendUserToHouseModel model);
+    Task<ResponseModel> AssignInhabitant(UserHouseModel model);
+    Task<ResponseModel> RemoveInhabitant(UserHouseModel model);
 }

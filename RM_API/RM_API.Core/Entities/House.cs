@@ -13,7 +13,7 @@ public class House : BaseEntity
     public string HouseAddress { get; set; }
 
     // Relationship with User (a house can have multiple inhabitants, but a user can only live in one house)
-    public List<User>? Inhabitants { get; set; } = new();
+    public virtual List<User>? Inhabitants { get; set; } = new();
 
     public bool IsActive { get; set; } = true;
 }

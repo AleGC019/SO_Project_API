@@ -22,7 +22,7 @@ public class Entry : BaseEntity
 
     // Relationship with Permission (an entry can only have one permission, but a permission can have multiple entries as long as they are not inactive)
     public Guid PermissionId { get; set; }
-    public Permission EntryPermission { get; set; }
+    public virtual Permission EntryPermission { get; set; }
 
     public bool IsActive { get; set; } = true;
 }

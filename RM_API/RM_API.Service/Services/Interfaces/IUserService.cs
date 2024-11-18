@@ -10,5 +10,8 @@ public interface IUserService
 
     Task<ResponseModel> ValidateUser(string email, string password);
     Task<ResponseModel> GetUserByEmail(string email);
+    Task<ResponseModel> GetUserByGuid(Guid guid);
+    Task<ResponseModel> GetAllUsers();
     Task<ResponseModel> UpdateUser(User user);
+    Task<ResponseModel> DeactivateUser(string email);
 }

@@ -47,7 +47,7 @@ public class HouseService : IHouseService
 
         if (house == null)
             return new ResponseModel(false, "House not found");
-        
+
         HouseResponseModel response = new()
         {
             HouseNumber = house.HouseNumber,
@@ -55,17 +55,17 @@ public class HouseService : IHouseService
             inhabitants = house.Inhabitants
                 .Select(i => new UserResponseModel { email = i.UserEmail, username = i.UserName }).ToList()
         };
-        
+
         return new ResponseModel(true, "House found", response);
     }
 
     public async Task<ResponseModel> GetHouseByHouseNumber(int number)
     {
         var house = await _houseRepository.GetHouseByHouseNumber(number);
-        
+
         if (house == null)
             return new ResponseModel(false, "House not found");
-        
+
         HouseResponseModel response = new()
         {
             HouseNumber = house.HouseNumber,
@@ -73,7 +73,7 @@ public class HouseService : IHouseService
             inhabitants = house.Inhabitants
                 .Select(i => new UserResponseModel { email = i.UserEmail, username = i.UserName }).ToList()
         };
-        
+
         return new ResponseModel(true, "House found", response);
     }
 
@@ -95,7 +95,7 @@ public class HouseService : IHouseService
         return new ResponseModel(true, "Houses found", response);
     }
 
-    public async Task<ResponseModel> AssignInhabitant(AppendUserToHouseModel request)
+    public async Task<ResponseModel> AssignInhabitant(UserHouseModel request)
     {
         var email = request.UserEmail;
         var houseNumber = request.HouseNumber;
@@ -112,7 +112,7 @@ public class HouseService : IHouseService
         if (houseSearch == null)
             return new ResponseModel(false, "House not found");
 
-        if (user.UserHouse.Equals(houseSearch))
+        if (user.UserHouse != null && user.UserHouse.Equals(houseSearch))
             return new ResponseModel(false, "User already assigned to this house");
 
         if (user.UserHouse != null)
@@ -124,6 +124,39 @@ public class HouseService : IHouseService
             await _userService.UpdateUser(user);
 
             return new ResponseModel(true, "User assigned to house successfully");
+        }
+        catch (Exception e)
+        {
+            return new ResponseModel(false, e.Message);
+        }
+    }
+
+    public async Task<ResponseModel> RemoveInhabitant(UserHouseModel model)
+    {
+        var email = model.UserEmail;
+        var houseNumber = model.HouseNumber;
+
+        var userSearch = await _userService.GetUserByEmail(email);
+
+        if (!userSearch.Success)
+            return new ResponseModel(false, "User not found");
+
+        var user = (User)userSearch.Data!;
+
+        var houseSearch = await _houseRepository.GetHouseByHouseNumber(houseNumber);
+
+        if (houseSearch == null)
+            return new ResponseModel(false, "House not found");
+
+        if (!user.UserHouse.Equals(houseSearch))
+            return new ResponseModel(false, "User not assigned to this house");
+
+        try
+        {
+            user.UserHouse = null;
+            await _userService.UpdateUser(user);
+
+            return new ResponseModel(true, "User removed from house successfully");
         }
         catch (Exception e)
         {

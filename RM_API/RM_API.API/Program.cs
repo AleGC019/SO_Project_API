@@ -16,6 +16,8 @@ using DateTimeConverter = RM_API.API.Utils.DateTimeConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddConsole();
+
 // Add CORS policy that allows all origins
 builder.Services.AddCors(options =>
 {
@@ -64,7 +66,9 @@ else
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole(RoleName.ADMIN.ToString()));
-    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("Residents", policy => policy.RequireRole(RoleName.ADMIN.ToString(), RoleName.RES.ToString()));
+    options.AddPolicy("Security", policy => policy.RequireRole(RoleName.ADMIN.ToString(), RoleName.SEC.ToString()));
+    options.AddPolicy("Vigilante", policy => policy.RequireRole(RoleName.SEC.ToString()));
 });
 
 
@@ -79,7 +83,10 @@ builder.Services.AddSingleton<DatabaseTestUtil>();
 
 // Register Database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options
+        .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .UseLazyLoadingProxies()
+);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -95,6 +102,8 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IHouseService, HouseService>();
+builder.Services.AddScoped<IPermitRepository, PermitRepository>();
+builder.Services.AddScoped<IPermitService, PermitService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
