@@ -3,19 +3,15 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using RM_API.Core.Entities;
-using RM_API.Service.Tools;
 
 namespace RM_API.API.Utils.JWT;
 
 public class JwtTokenGenerator
 {
     private readonly IConfiguration _configuration;
-    private readonly TimeZoneTool _timeZoneTool;
-
-    public JwtTokenGenerator(IConfiguration configuration, TimeZoneTool timeZoneTool)
+    public JwtTokenGenerator(IConfiguration configuration)
     {
         _configuration = configuration;
-        _timeZoneTool = timeZoneTool;
     }
 
     public string GenerateToken(User user)

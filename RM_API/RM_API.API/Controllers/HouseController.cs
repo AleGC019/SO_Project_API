@@ -19,16 +19,6 @@ public class HouseController : ControllerBase
     }
 
     [Authorize(Policy = "Admin")]
-    [HttpGet("getById/{id}")]
-    public async Task<IActionResult> GetHouseById(Guid id)
-    {
-        var response = await _houseService.GetHouseById(id);
-        if (!response.Success) return NotFound(response.Message);
-        var house = (HouseResponseModel)response.Data!;
-        return Ok(house);
-    }
-
-    [Authorize(Policy = "Admin")]
     [HttpPost("newHouse")]
     public async Task<IActionResult> AddHouse([FromBody] NewHouseModel request)
     {
@@ -38,7 +28,7 @@ public class HouseController : ControllerBase
     }
 
     [Authorize(Policy = "Admin")]
-    [HttpGet("all")]
+    [HttpGet("getAll")]
     public async Task<IActionResult> GetAllHouses()
     {
         var response = await _houseService.GetAllHouses();
@@ -48,12 +38,13 @@ public class HouseController : ControllerBase
     }
 
     [Authorize(Policy = "Admin")]
-    [HttpPost("linkInhabitant")]
-    public async Task<IActionResult> AppendUserToHouse([FromBody] UserHouseModel request)
+    [HttpGet("getByHouseId/{id}")]
+    public async Task<IActionResult> GetHouseById(Guid id)
     {
-        var response = await _houseService.AssignInhabitant(request);
-        if (!response.Success) return Conflict(response.Message);
-        return Ok(response);
+        var response = await _houseService.GetHouseById(id);
+        if (!response.Success) return NotFound(response.Message);
+        var house = (HouseResponseModel)response.Data!;
+        return Ok(house);
     }
 
     [Authorize(Policy = "Admin")]
@@ -67,7 +58,16 @@ public class HouseController : ControllerBase
     }
 
     [Authorize(Policy = "Admin")]
-    [HttpGet("removeInhabitant")]
+    [HttpPost("linkInhabitant")]
+    public async Task<IActionResult> AppendUserToHouse([FromBody] UserHouseModel request)
+    {
+        var response = await _houseService.AssignInhabitant(request);
+        if (!response.Success) return Conflict(response.Message);
+        return Ok(response);
+    }
+
+    [Authorize(Policy = "Admin")]
+    [HttpPost("removeInhabitant")]
     public async Task<IActionResult> RemoveInhabitantFromHouse([FromBody] UserHouseModel request)
     {
         var response = await _houseService.RemoveInhabitant(request);

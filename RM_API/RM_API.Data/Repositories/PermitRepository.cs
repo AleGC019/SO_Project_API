@@ -57,6 +57,11 @@ public class PermitRepository : IPermitRepository
     public async Task<Permission?> GetValidPermit(Guid userId, Guid houseId)
     {
         return await _context.Permissions.FirstOrDefaultAsync(p =>
-            p.UserId == userId && p.HouseId == houseId && p.Status == true);
+            (p.UserId == userId && p.HouseId == houseId) && p.Status == true);
+    }
+
+    public async Task<List<Permission>?> GetPermitByHomeAndUser(Guid userId, Guid houseId)
+    {
+        return await _context.Permissions.Where(p => p.UserId == userId && p.HouseId == houseId).ToListAsync();
     }
 }

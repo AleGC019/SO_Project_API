@@ -12,4 +12,5 @@ public interface IPermitRepository
     Task<List<Permission>?> GetPermitsByHouseId(Guid userId);
     Task<List<Permission>?> GetPermitsByUserId(Guid userId);
     Task<Permission?> GetValidPermit(Guid userId, Guid houseId);
+    Task<List<Permission>?> GetPermitByHomeAndUser(Guid userId, Guid houseId);
 }

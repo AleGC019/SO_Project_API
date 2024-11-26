@@ -17,7 +17,7 @@ public class Entry : BaseEntity
     public DateTime EntryTimestamp { get; set; } = DateTime.UtcNow;
 
     [Required(ErrorMessage = "El tipo de terminal es obligatorio.")]
-    [EnumDataType(typeof(TerminalType), ErrorMessage = "El tipo de terminal no es válido.")]
+    [EnumDataType(typeof(TerminalType), ErrorMessage = "El tipo de terminal no es válido. Debe ser 'Vehicular' o 'Peatonal'.")]
     public TerminalType EntryTerminal { get; set; }
 
     // Relationship with Permission (an entry can only have one permission, but a permission can have multiple entries as long as they are not inactive)

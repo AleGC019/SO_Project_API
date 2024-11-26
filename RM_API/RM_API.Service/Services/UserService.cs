@@ -1,11 +1,10 @@
-using System.Security.Claims;
 using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.AuthModels;
 using RM_API.Core.Models.UserModels;
 using RM_API.Data.Repositories.Interfaces;
 using RM_API.Service.Services.Interfaces;
-using RM_API.Service.Utils;
+using RM_API.Service.Tools;
 
 namespace RM_API.Service.Services;
 
@@ -40,7 +39,7 @@ public class UserService : IUserService
         var defaultRole = (Role)roleResponse.Data!;
 
         // Hash the password
-        var hashedPassword = PasswordHelper.HashPassword(model.Password);
+        var hashedPassword = PasswordHelper.HashPassword(model.password);
 
         // Create the new user
         var newUser = new User
@@ -111,14 +110,12 @@ public class UserService : IUserService
         List<UserResponseModel> userResponses = new();
 
         foreach (var user in users)
-        {
             userResponses.Add(new UserResponseModel
             {
                 email = user.UserEmail,
                 username = user.UserName,
                 role = user.UserRole.RoleName.ToString()
             });
-        }
 
         return new ResponseModel(true, "Usuarios encontrados", userResponses);
     }

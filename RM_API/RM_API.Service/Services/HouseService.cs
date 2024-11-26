@@ -1,3 +1,4 @@
+using Microsoft.Identity.Client;
 using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.HouseModels;
@@ -11,11 +12,13 @@ public class HouseService : IHouseService
 {
     private readonly IHouseRepository _houseRepository;
     private readonly IUserService _userService;
+    private readonly IUserRepository _userRepository;
 
-    public HouseService(IHouseRepository houseRepository, IUserService userService)
+    public HouseService(IHouseRepository houseRepository, IUserService userService, IUserRepository userRepository)
     {
         _houseRepository = houseRepository;
         _userService = userService;
+        _userRepository = userRepository;
     }
 
     public async Task<ResponseModel> SaveHouse(NewHouseModel model)
@@ -100,12 +103,10 @@ public class HouseService : IHouseService
         var email = request.UserEmail;
         var houseNumber = request.HouseNumber;
 
-        var userSearch = await _userService.GetUserByEmail(email);
+        var user = await _userRepository.GetByEmailAsync(email);
 
-        if (!userSearch.Success)
+        if (user == null)
             return new ResponseModel(false, "User not found");
-
-        var user = (User)userSearch.Data!;
 
         var houseSearch = await _houseRepository.GetHouseByHouseNumber(houseNumber);
 
@@ -116,7 +117,7 @@ public class HouseService : IHouseService
             return new ResponseModel(false, "User already assigned to this house");
 
         if (user.UserHouse != null)
-            return new ResponseModel(false, "User already assigned to an existing house");
+            return new ResponseModel(false, "User already assigned to an existing house. Remove user from house first");
 
         try
         {
@@ -133,17 +134,15 @@ public class HouseService : IHouseService
 
     public async Task<ResponseModel> RemoveInhabitant(UserHouseModel model)
     {
-        var email = model.UserEmail;
-        var houseNumber = model.HouseNumber;
+        var user = await _userRepository.GetByEmailAsync(model.UserEmail);
 
-        var userSearch = await _userService.GetUserByEmail(email);
-
-        if (!userSearch.Success)
+        if (user == null)
             return new ResponseModel(false, "User not found");
+        
+        if(user.UserHouse == null)
+            return new ResponseModel(false, "There is no house assigned to this user");
 
-        var user = (User)userSearch.Data!;
-
-        var houseSearch = await _houseRepository.GetHouseByHouseNumber(houseNumber);
+        var houseSearch = await _houseRepository.GetHouseByHouseNumber(model.HouseNumber);
 
         if (houseSearch == null)
             return new ResponseModel(false, "House not found");

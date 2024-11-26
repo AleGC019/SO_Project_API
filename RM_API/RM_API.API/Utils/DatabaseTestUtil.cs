@@ -1,28 +1,22 @@
-using Microsoft.Data.SqlClient;
-
-namespace RM_API.API.Utils;
+using RM_API.Data;
 
 public class DatabaseTestUtil
 {
-    private readonly IConfiguration _configuration;
+    private readonly ApplicationDbContext _context;
 
-    public DatabaseTestUtil(IConfiguration configuration)
+    public DatabaseTestUtil(ApplicationDbContext context)
     {
-        _configuration = configuration;
+        _context = context;
     }
 
     public bool TestConnection()
     {
         try
         {
-            using var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-            connection.Open();
-            Console.WriteLine("Conexión exitosa.");
-            return true;
+            return _context.Database.CanConnect();
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"❌ Error al conectar a la base de datos: {ex.Message}");
             return false;
         }
     }

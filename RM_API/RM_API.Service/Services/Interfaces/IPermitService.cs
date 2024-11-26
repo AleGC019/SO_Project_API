@@ -1,3 +1,4 @@
+using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.Permission;
 
@@ -9,4 +10,5 @@ public interface IPermitService
     Task<ResponseModel> CreatePermit(PermissionRequest permissionRequest);
     Task<ResponseModel> DeletePermit(Guid permitId);
     Task<ResponseModel> GetMyPermits(Guid userId);
+    Task CheckPermit(Permission permit);
 }

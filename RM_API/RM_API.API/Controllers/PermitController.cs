@@ -10,7 +10,7 @@ namespace RM_API.API.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/permit/")]
-public class PermitController: ControllerBase
+public class PermitController : ControllerBase
 {
     private readonly IPermitService _permitService;
 
@@ -18,7 +18,7 @@ public class PermitController: ControllerBase
     {
         _permitService = permitService;
     }
-    
+
     [Authorize(Policy = "Security")]
     [HttpGet("allPermits")]
     public async Task<IActionResult> GetAllPermits()
@@ -28,8 +28,8 @@ public class PermitController: ControllerBase
             return BadRequest(response);
         return Ok(response);
     }
-    
-    [Authorize(Policy = "Residents")]   
+
+    [Authorize(Policy = "Residents")]
     [HttpPost("createPermit")]
     public async Task<IActionResult> CreatePermit([FromBody] PermissionRequest permit)
     {
@@ -38,7 +38,7 @@ public class PermitController: ControllerBase
             return BadRequest(response);
         return Ok(response);
     }
-    
+
     [Authorize(Policy = "Residents")]
     [HttpDelete("deletePermit/{permitId}")]
     public async Task<IActionResult> DeletePermit(Guid permitId)
@@ -48,7 +48,7 @@ public class PermitController: ControllerBase
             return BadRequest(response);
         return Ok(response);
     }
-    
+
     [Authorize(Policy = "Residents")]
     [HttpGet("myPermits")]
     public async Task<IActionResult> GetMyPermits()
@@ -61,6 +61,7 @@ public class PermitController: ControllerBase
                 return BadRequest(response);
             return Ok(response);
         }
+
         return BadRequest(new ResponseModel
         {
             Success = false,

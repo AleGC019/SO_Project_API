@@ -26,16 +26,15 @@ public class UserController : ControllerBase
         return Task.FromResult<IActionResult>(Ok(new { userId, userName, userRole }));
     }
 
-    [Authorize(Policy = "Admin")]
-    [HttpDelete("delete/{email}")]
-    public async Task<IActionResult> DeleteUser(string email)
+    [Authorize("Admin")]
+    [HttpGet("getAll")]
+    public async Task<IActionResult> GetAllUsers()
     {
-        Console.WriteLine("ENTRANDO AL CONTROLADOR" + email);
-        var response = await _userService.DeactivateUser(email);
+        var response = await _userService.GetAllUsers();
         if (!response.Success) return NotFound(response.Message);
         return Ok(response);
     }
-    
+
     [Authorize(Policy = "Admin")]
     [HttpGet("getByEmail/{email}")]
     public async Task<IActionResult> GetUserByEmail(string email)
@@ -44,21 +43,22 @@ public class UserController : ControllerBase
         if (!response.Success) return NotFound(response.Message);
         return Ok(response);
     }
-    
+
     [Authorize("Admin")]
-    [HttpGet("getById/{guid}")]
+    [HttpGet("getByUserId/{guid}")]
     public async Task<IActionResult> GetUserByGuid(Guid guid)
     {
         var response = await _userService.GetUserByGuid(guid);
         if (!response.Success) return NotFound(response.Message);
         return Ok(response);
     }
-    
-    [Authorize("Admin")]
-    [HttpGet("getAll")]
-    public async Task<IActionResult> GetAllUsers()
+
+    [Authorize(Policy = "Admin")]
+    [HttpDelete("delete/{email}")]
+    public async Task<IActionResult> DeleteUser(string email)
     {
-        var response = await _userService.GetAllUsers();
+        Console.WriteLine("ENTRANDO AL CONTROLADOR" + email);
+        var response = await _userService.DeactivateUser(email);
         if (!response.Success) return NotFound(response.Message);
         return Ok(response);
     }

@@ -2,10 +2,13 @@ namespace RM_API.Service.Tools;
 
 public class TimeZoneTool
 {
-    private readonly TimeZoneInfo _appTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+    private readonly TimeZoneInfo _appTimeZone;
 
-    // Set application-wide time zone, for example, Eastern Time
-
+    public TimeZoneTool(string appTimeZone)
+    {
+        _appTimeZone = TimeZoneInfo.FindSystemTimeZoneById(appTimeZone);
+    }
+        
     public DateTime ConvertUtcToAppTimeZone(DateTime utcDate)
     {
         return TimeZoneInfo.ConvertTimeFromUtc(utcDate, _appTimeZone);

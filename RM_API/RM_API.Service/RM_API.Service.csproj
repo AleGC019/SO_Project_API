@@ -11,4 +11,14 @@
         <ProjectReference Include="..\RM_API.Data\RM_API.Data.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Azure.Core" Version="1.44.1"/>
+        <PackageReference Include="Azure.Identity" Version="1.13.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0"/>
+    </ItemGroup>
+
 </Project>

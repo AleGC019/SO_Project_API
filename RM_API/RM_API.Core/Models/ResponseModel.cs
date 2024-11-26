@@ -19,7 +19,7 @@ public class ResponseModel
     {
         Success = success;
     }
-    
+
     public ResponseModel()
     {
     }

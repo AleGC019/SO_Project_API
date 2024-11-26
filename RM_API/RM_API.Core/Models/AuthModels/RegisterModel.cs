@@ -16,7 +16,7 @@ public class RegisterModel
     [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
         ErrorMessage =
             "La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, una letra minúscula, un número y un carácter especial.")]
-    public string Password { get; set; }
+    public string password { get; set; }
     // Password validation mean this: 
     // Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
 }

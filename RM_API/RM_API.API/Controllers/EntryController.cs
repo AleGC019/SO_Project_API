@@ -17,7 +17,7 @@ public class EntryController : ControllerBase
         _entryService = entryService;
     }
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "Security")]
     [HttpGet("allEntries")]
     public async Task<IActionResult> GetAllEntries()
     {
@@ -26,8 +26,8 @@ public class EntryController : ControllerBase
             return BadRequest(response);
         return Ok(response);
     }
-    
-    [Authorize("Vigilante")]
+
+    [Authorize("Security")]
     [HttpPost("requestEntry")]
     public async Task<IActionResult> RequestEntry([FromBody] RequireEntry entryRequest)
     {

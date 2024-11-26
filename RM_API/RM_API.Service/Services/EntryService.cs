@@ -1,7 +1,6 @@
 using RM_API.Core.Entities;
 using RM_API.Core.Models;
 using RM_API.Core.Models.EntryModels;
-using RM_API.Core.Models.HouseModels;
 using RM_API.Data.Repositories.Interfaces;
 using RM_API.Service.Services.Interfaces;
 
@@ -11,18 +10,21 @@ public class EntryService : IEntryService
 {
     private readonly IEntryRepository _entryRepository;
     private readonly IPermitRepository _permitRepository;
+    private readonly IPermitService _permitService;
 
-    public EntryService(IEntryRepository entryRepository, IPermitRepository permitRepository)
+    public EntryService(IEntryRepository entryRepository, IPermitRepository permitRepository,
+        IPermitService permitService)
     {
         _entryRepository = entryRepository;
         _permitRepository = permitRepository;
+        _permitService = permitService;
     }
 
     public async Task<ResponseModel> GetAllEntries()
     {
         var entries = await _entryRepository.GetAllEntries();
 
-        if (entries != null)
+        if (entries.Count > 0)
         {
             var response = entries.Select(e => new EntryResponseModel
             {
@@ -84,31 +86,43 @@ public class EntryService : IEntryService
 
     public async Task<ResponseModel> RequestEntry(RequireEntry entryRequest)
     {
-        // Check if the user has a valid permit for the house
-        var validPermit = await _permitRepository.GetValidPermit(entryRequest.UserId, entryRequest.HouseId);
-        if (validPermit == null)
-        {
+        // Check if the user has any permit to enter the house
+        var permits = await _permitRepository.GetPermitByHomeAndUser(entryRequest.UserId, entryRequest.HouseId);
+
+        if (permits == null || permits.Count == 0)
             return new ResponseModel(false, "No valid permit found for the user to enter the house");
-        }
-        
-        // Check permit validation from now with the start and end date
-        if (entryRequest.Date < validPermit.StartDate || entryRequest.Date > validPermit.EndDate)
+
+        // Check validation of the permits
+        foreach (var permit in permits)
         {
-            // Check if the permit has not yet been deactivated. If so, update permit in the database
-            if (validPermit.Status)
-            {
-                validPermit.Status = false;
-                await _permitRepository.UpdatePermit(validPermit);
-            }
-            return new ResponseModel(false, "Permit is not valid for the current time");
+            await _permitService.CheckPermit(permit);
         }
 
+        var validPermits = permits.Where(p => p.Status).ToList();
+
+        // Check if in the validPermits there is any permit that is valid for the current time, that means, current time is between the start and end date of the permit
+        var validPermit =
+            validPermits.FirstOrDefault(p => entryRequest.Date >= p.StartDate && entryRequest.Date <= p.EndDate);
+
+        if (validPermit == null)
+            return new ResponseModel(false, "No valid permit found for the user to enter the house at this moment.");
+        
+        // Validating terminal type
+        if (Enum.TryParse(entryRequest.Terminal, out TerminalType terminalType))
+        {
+            entryRequest.Terminal = terminalType.ToString();
+        }
+        else
+        {
+            return new ResponseModel(false, "Invalid terminal type");
+        }
+        
         // Create the entry
         var entry = new Entry
         {
             EntryComment = entryRequest.Description,
             EntryTimestamp = DateTime.UtcNow,
-            EntryTerminal = entryRequest.Terminal,
+            EntryTerminal = terminalType,
             PermissionId = validPermit.Id
         };
 

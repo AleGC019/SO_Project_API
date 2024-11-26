@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace RM_API.Service.Utils;
+namespace RM_API.Service.Tools;
 
 public static class PasswordHelper
 {

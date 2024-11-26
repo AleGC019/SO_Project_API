@@ -4,15 +4,15 @@ using RM_API.Data.Repositories.Interfaces;
 
 namespace RM_API.Data.Repositories;
 
-public class EntryRepository: IEntryRepository
+public class EntryRepository : IEntryRepository
 {
     private readonly ApplicationDbContext _context;
-    
+
     public EntryRepository(ApplicationDbContext context)
     {
         _context = context;
     }
-    
+
     public async Task<List<Entry>?> GetAllEntries()
     {
         return await _context.Entries
